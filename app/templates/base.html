@@ -1,0 +1,121 @@
+{% extends 'main.html' %}
+
+{% block title %}
+    {% if title %}{{ title }} - Microblog{% else %}MONITOR{% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default text-center">
+        <span style="color:red; font-size: 250%;">JustEat environments monitor</span>
+        <img src="static/justeat.png" style="width:48px;height:48px;float:right;">
+        <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    </nav>
+{% endblock %}
+
+{% block content%}
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th class="text-center">Name</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Taken by</th>
+            <th class="text-center">Taken for</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        
+            {% for env in env %}
+            {% if env[1] == 0 %}
+            <tr bgcolor="#00FF7F">
+            {% else %}
+            <tr bgcolor="#BFBFBF" data-toggle="tooltip" data-placement="top" title="{{env[4]}}">
+            {% endif %}
+                <td>
+                    <a href='https://ci.je-labs.com/project.html?projectId=AcquiredPlatforms_AllorestoAnsible&tab=projectOverview' target="_blank">
+                        {{env[0]}}
+                    </a>
+                </td>
+                <td>
+                    {% if env[1] == 0 %}
+                        Free
+                    {% else %}
+                        Taken
+                    {% endif %}
+                </td>
+                <td>{{env[2]}}</td>
+                <td>
+                    {% if env[1] == 0 %}
+                        
+                    {% else %}
+                        {{env[5]}}
+                    {% endif %}
+                
+                </td>
+                <td>
+                        {% if env[1] == 0 %}
+                            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal" data-id={{env[0]}}>
+                                Use
+                            </button>
+                        {% else %}
+                        <form method="post" action="/">
+                            <input type="hidden" id="action" name="action" value="Free!">
+                            <input type="hidden" id="env_name" name="env" value="{{env[0]}}">
+                            <input class="btn btn-danger btn-lg" type="submit" value="Stop!">
+                        </form>
+                        {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        
+    </tbody>
+</table>
+<div class="navbar fixed-bottom">
+    <div class="footer-copyright text-center py-3">Hackathon summer 2019 by 
+        <a href="https://www.linkedin.com/in/aleksey-popov-89584062/">Aleksey Popov</a>
+    </div>
+    <div class="footer-copyright text-center py-3">
+        <span>v0.0.1</span>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center" id="exampleModalLabel">Really?</h5>
+      </div>
+      <div class="modal-body">
+        <form role="form" action = "/" method = "POST">
+            <input type="hidden" id="env" name="env" value="3487">
+            <input type="hidden" id="action" name="action" value="Claim">
+                  <div class="form-group">
+                    <label for="name">Who you are?</label>
+                      <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="Comment">Comment</label>
+                      <input type="text" class="form-control" id="comment" name="comment" placeholder="Comment"/>
+                  </div>
+                  <input type="submit" class="btn btn-primary"/>
+                </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abort mission!</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('button[data-toggle=modal]').click(function () {
+            var data_id = '';
+            if (typeof $(this).data('id') !== 'undefined') {
+              data_id = $(this).data('id');
+            }
+            $('#env').val(data_id);
+        })
+    });
+</script>
+{% endblock %}
+
